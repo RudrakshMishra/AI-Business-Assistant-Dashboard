@@ -14,4 +14,3 @@ FastAPI • Next.js • MongoDB • OpenAI • Tailwind
 ## Run Locally
 1. Start backend
 2. Start frontend
-3. Open http://localhost:3000
