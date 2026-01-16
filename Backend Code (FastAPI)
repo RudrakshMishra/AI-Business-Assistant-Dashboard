@@ -1,0 +1,88 @@
+backend/requirements.txt
+fastapi
+uvicorn
+python-dotenv
+pymongo
+openai
+passlib[bcrypt]
+python-jose
+
+
+backend/app/config.py
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+OPENAI_KEY = os.getenv("OPENAI_KEY")
+MONGO_URI = os.getenv("MONGO_URI")
+JWT_SECRET = os.getenv("JWT_SECRET")
+
+
+backend/app/database.py
+from pymongo import MongoClient
+from app.config import MONGO_URI
+
+client = MongoClient(MONGO_URI)
+db = client["ai_business"]
+sales = db["sales"]
+users = db["users"]
+
+
+backend/app/ai.py
+from openai import OpenAI
+from app.config import OPENAI_KEY
+
+client = OpenAI(api_key=OPENAI_KEY)
+
+def generate_insight(prompt: str):
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[{"role": "user", "content": prompt}]
+    )
+    return response.choices[0].message.content
+
+
+backend/app/routes/insights.py
+from fastapi import APIRouter
+from app.ai import generate_insight
+from app.database import sales
+
+router = APIRouter()
+
+@router.get("/summary")
+def sales_summary():
+    data = list(sales.find({}, {"_id": 0}))
+    prompt = f"Summarize today's sales and suggest promotions:\n{data}"
+    return {"insight": generate_insight(prompt)}
+
+
+backend/app/routes/sales.py
+from fastapi import APIRouter
+from app.database import sales
+
+router = APIRouter()
+
+@router.post("/")
+def add_sale(item: dict):
+    sales.insert_one(item)
+    return {"message": "Sale added"}
+
+
+backend/app/main.py
+from fastapi import FastAPI
+from app.routes import sales, insights
+
+app = FastAPI(title="AI Business Assistant")
+
+app.include_router(sales.router, prefix="/sales")
+app.include_router(insights.router, prefix="/ai")
+
+@app.get("/")
+def root():
+    return {"status": "AI Business Assistant Running"}
+
+
+Run Backend
+cd backend
+uvicorn app.main:app --reload
