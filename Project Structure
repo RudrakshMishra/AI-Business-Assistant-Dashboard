@@ -1,0 +1,34 @@
+ai-business-assistant/
+│
+├── backend/
+│   ├── app/
+│   │   ├── main.py
+│   │   ├── config.py
+│   │   ├── database.py
+│   │   ├── auth.py
+│   │   ├── ai.py
+│   │   ├── models.py
+│   │   ├── routes/
+│   │   │   ├── sales.py
+│   │   │   ├── insights.py
+│   │   │   └── users.py
+│   │
+│   ├── requirements.txt
+│   └── .env
+│
+├── frontend/
+│   ├── app/
+│   │   ├── page.tsx
+│   │   ├── dashboard/
+│   │   │   └── page.tsx
+│   │   └── components/
+│   │       ├── Chart.tsx
+│   │       ├── VoiceButton.tsx
+│   │       └── StatCard.tsx
+│   │
+│   ├── tailwind.config.js
+│   ├── package.json
+│   └── .env.local
+│
+└── README.md
+
